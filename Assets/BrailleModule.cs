@@ -181,7 +181,7 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
     }
 
 #pragma warning disable 414
-    private string TwitchHelpMessage = @"XYZ";
+    private string TwitchHelpMessage = @"Use !{0} cycle to show the Braille letters. Use !{0} press 1 to press the first letter, etc.";
 #pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string command)
