@@ -149,6 +149,7 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
         var flippedPositions = new List<int>();
         _word = words[Rnd.Range(0, words.Length)];
         var braille = brailleRegex.Matches(_word).Cast<Match>().Select(m => _brailleLetters[m.Value].Dots).ToArray();
+        var origPatterns = Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (braille[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; ");
 
         var serial = Bomb.GetSerialNumber();
         var curPos = 0;
@@ -166,6 +167,8 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
         if (braille.Any(b => b == 0))
             goto tryAgain;
 
+        Debug.LogFormat("[Braille #{0}] {1}Braille patterns on module: {2}", _moduleId, first ? "" : "New ", Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (braille[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; "));
+        Debug.LogFormat("[Braille #{0}] {1}Braille patterns after flips: {2}", _moduleId, first ? "" : "New ", origPatterns);
         Debug.LogFormat("[Braille #{0}] {1} word: {2} ({3})", _moduleId, first ? "Solution" : "New solution", _word, _solutions[_word] + 1);
         if (first)
             Debug.LogFormat("[Braille #{0}] Flipped positions in order: {1}", _moduleId, flippedPositions.JoinString(", "));
