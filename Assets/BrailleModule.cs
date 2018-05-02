@@ -189,12 +189,13 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
 
     private IEnumerator ProcessTwitchCommand(string command)
     {
-        var pieces = command.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var pieces = command.ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         int val;
 
         if (pieces.Length == 1 && pieces[0] == "cycle" && !_isSolved)
         {
+            yield return null;
             for (int i = 0; i < 4; i++)
             {
                 yield return new WaitForSeconds(.25f);
@@ -203,7 +204,7 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
                 if (hClone != null)
                     obj = hClone.gameObject ?? obj;
                 obj.SetActive(true);
-                yield return new WaitForSeconds(1.25f);
+                yield return new WaitForSeconds(2.25f);
                 obj.SetActive(false);
                 yield return new WaitForSeconds(.25f);
             }
