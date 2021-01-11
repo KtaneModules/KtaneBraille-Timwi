@@ -214,6 +214,11 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
             yield return null;
             BrailleLetterSelectables[val - 1].OnInteract();
         }
+        else if (pieces.Length == 1 && int.TryParse(pieces[0], out val) && val >= 1 && val <= 4 && !_isSolved)
+        {
+            yield return null;
+            BrailleLetterSelectables[val - 1].OnInteract();
+        }
     }
 
     IEnumerator TwitchHandleForcedSolve()
