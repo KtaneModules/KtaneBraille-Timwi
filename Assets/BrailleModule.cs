@@ -189,11 +189,10 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
 
     private IEnumerator ProcessTwitchCommand(string command)
     {
-        var pieces = command.ToLowerInvariant().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
         int val;
+        Match m;
 
-        if (pieces.Length == 1 && pieces[0] == "cycle" && !_isSolved)
+        if (Regex.IsMatch(command, @"^\s*cycle\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && !_isSolved)
         {
             yield return null;
             for (int i = 0; i < 4; i++)
@@ -209,12 +208,8 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
                 yield return new WaitForSeconds(.25f);
             }
         }
-        else if (pieces.Length == 2 && pieces[0] == "press" && int.TryParse(pieces[1], out val) && val >= 1 && val <= 4 && !_isSolved)
-        {
-            yield return null;
-            BrailleLetterSelectables[val - 1].OnInteract();
-        }
-        else if (pieces.Length == 1 && int.TryParse(pieces[0], out val) && val >= 1 && val <= 4 && !_isSolved)
+        else if ((m = Regex.Match(command, @"^\s*(?:press\s+)?(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)).Success
+            && int.TryParse(m.Groups[1].Value, out val) && val >= 1 && val <= 4 && !_isSolved)
         {
             yield return null;
             BrailleLetterSelectables[val - 1].OnInteract();
