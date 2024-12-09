@@ -20,6 +20,7 @@ public class BrailleModule : MonoBehaviour
     public Mesh[] BrailleLetterMeshes;
     public MeshFilter[] BrailleLetterHighlights;
     public KMSelectable[] BrailleLetterSelectables;
+    private int[] BraillePatterns;  // for Souvenir
 
     private sealed class BrailleLetter
     {
@@ -148,8 +149,8 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
         tryAgain:
         var flippedPositions = new List<int>();
         _word = words[Rnd.Range(0, words.Length)];
-        var braille = brailleRegex.Matches(_word).Cast<Match>().Select(m => _brailleLetters[m.Value].Dots).ToArray();
-        var origPatterns = Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (braille[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; ");
+        BraillePatterns = brailleRegex.Matches(_word).Cast<Match>().Select(m => _brailleLetters[m.Value].Dots).ToArray();
+        var origPatterns = Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (BraillePatterns[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; ");
 
         var serial = Bomb.GetSerialNumber();
         var curPos = 0;
@@ -158,16 +159,16 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
             var value = serial[i] >= '0' && serial[i] <= '9' ? serial[i] - '0' : serial[i] - 'A' + 1;
             curPos += value;
             curPos %= 24;
-            braille[curPos / 6] ^= 1 << (curPos % 6);
+            BraillePatterns[curPos / 6] ^= 1 << (curPos % 6);
             curPos++;
             flippedPositions.Add(curPos);
         }
 
         // Avoid use of the completely-empty cell
-        if (braille.Any(b => b == 0))
+        if (BraillePatterns.Any(b => b == 0))
             goto tryAgain;
 
-        Debug.LogFormat("[Braille #{0}] {1}Braille patterns on module: {2}", _moduleId, first ? "" : "New ", Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (braille[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; "));
+        Debug.LogFormat("[Braille #{0}] {1}Braille patterns on module: {2}", _moduleId, first ? "" : "New ", Enumerable.Range(0, 4).Select(ix => Enumerable.Range(0, 6).Select(cell => (BraillePatterns[ix] & (1 << cell)) == 0 ? null : (cell + 1).ToString()).Where(str => str != null).JoinString("-")).JoinString("; "));
         Debug.LogFormat("[Braille #{0}] {1}Braille patterns after flips: {2}", _moduleId, first ? "" : "New ", origPatterns);
         Debug.LogFormat("[Braille #{0}] {1} word: {2} ({3})", _moduleId, first ? "Solution" : "New solution", _word, _solutions[_word] + 1);
         if (first)
@@ -175,11 +176,11 @@ ch=16 gh=126 sh=146 th=1456 wh=156 ed=1246 er=12456 ou=1256 ow=246 w=2456
 
         for (int i = 0; i < 4; i++)
         {
-            var mesh = BrailleLetterMeshes.First(b => int.Parse(b.name.Substring("BrailleHighlight_".Length)) == braille[i]);
-            BrailleLetterHighlights[i].mesh = mesh;
+            var mesh = BrailleLetterMeshes.First(b => int.Parse(b.name.Substring("BrailleHighlight_".Length)) == BraillePatterns[i]);
+            BrailleLetterHighlights[i].sharedMesh = mesh;
             var hClone = BrailleLetterHighlights[i].transform.Find("Highlight(Clone)");
             if (hClone != null)
-                hClone.GetComponent<MeshFilter>().mesh = mesh;
+                hClone.GetComponent<MeshFilter>().sharedMesh = mesh;
         }
     }
 

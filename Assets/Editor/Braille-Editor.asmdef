@@ -1,0 +1,10 @@
+{
+  "name": "Braille-Editor",
+  "references": [
+    "Braille"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}
